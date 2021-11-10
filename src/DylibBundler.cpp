@@ -213,14 +213,14 @@ void fixRpathsOnFile(const std::string& original_file, const std::string& file_t
         command = std::string("codesign --remove-signature \"") + file_to_fix + "\"";
         if( systemp( command ) != 0 )
         {
-            std::cerr << "\n\nError : An error occurred while removing the signature of library " << file_to_fix << std::endl;
+            std::cerr << "\n\nError : An error occurred while removing the signature of " << file_to_fix << std::endl;
             exit(1);
         }
         
         command = std::string("codesign --sign - \"") + file_to_fix + "\"";
         if( systemp( command ) != 0)
         {
-            std::cerr << "\n\nError : An error occurred while applying ad hoc signature to library " << file_to_fix << std::endl;
+            std::cerr << "\n\nError : An error occurred while applying ad hoc signature to " << file_to_fix << std::endl;
             exit(1);
         }
     }

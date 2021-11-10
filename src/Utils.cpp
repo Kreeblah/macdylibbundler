@@ -180,14 +180,14 @@ void changeInstallName(const std::string& binary_file, const std::string& old_na
     command = std::string("codesign --remove-signature \"") + binary_file + "\"";
     if( systemp( command ) != 0 )
     {
-        std::cerr << "\n\nError : An error occurred while removing the signature of library " << binary_file << std::endl;
+        std::cerr << "\n\nError : An error occurred while removing the signature of " << binary_file << std::endl;
         exit(1);
     }
     
     command = std::string("codesign --sign - \"") + binary_file + "\"";
     if( systemp( command ) != 0)
     {
-        std::cerr << "\n\nError : An error occurred while applying ad hoc signature to library " << binary_file << std::endl;
+        std::cerr << "\n\nError : An error occurred while applying ad hoc signature to " << binary_file << std::endl;
         exit(1);
     }
 }
