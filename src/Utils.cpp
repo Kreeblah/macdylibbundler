@@ -175,6 +175,21 @@ void changeInstallName(const std::string& binary_file, const std::string& old_na
         std::cerr << "\n\nError: An error occured while trying to fix dependencies of " << binary_file << std::endl;
         exit(1);
     }
+    
+    // Remove existing signature and add ad hoc signature for ARM (Apple Silicon) binaries
+    command = std::string("codesign --remove-signature \"") + binary_file + "\"";
+    if( systemp( command ) != 0 )
+    {
+        std::cerr << "\n\nError : An error occurred while removing the signature of library " << binary_file << std::endl;
+        exit(1);
+    }
+    
+    command = std::string("codesign --sign - \"") + binary_file + "\"";
+    if( systemp( command ) != 0)
+    {
+        std::cerr << "\n\nError : An error occurred while applying ad hoc signature to library " << binary_file << std::endl;
+        exit(1);
+    }
 }
 
 std::string getUserInputDirForFile(const std::string& filename)
