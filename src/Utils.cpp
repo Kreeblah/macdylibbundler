@@ -221,7 +221,7 @@ std::string getUserInputDirForFile(const std::string& filename)
 void adhocCodeSign(const std::string& filename)
 {
     // Add ad-hoc signature for ARM (Apple Silicon) binaries
-    std::string command = std::string("codesign --force --deep --sign - \"") + filename + "\"";
+    std::string command = std::string("codesign --force --deep --preserve-metadata=entitlements,requirements,flags,runtime --sign - \"") + filename + "\"";
     if( systemp( command ) != 0 )
     {
         std::cerr << "\n\nError : An error occurred while applying ad-hoc signature to " << filename << std::endl;
