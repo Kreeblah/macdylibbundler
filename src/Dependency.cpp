@@ -205,21 +205,8 @@ void Dependency::copyYourself()
         std::cerr << "\n\nError : An error occured while trying to change identity of library " << getInstallPath() << std::endl;
         exit(1);
     }
-    
-    // Remove existing signature and add ad hoc signature for ARM (Apple Silicon) binaries
-    command = std::string("codesign --remove-signature \"") + getInstallPath() + "\"";
-    if( systemp( command ) != 0 )
-    {
-        std::cerr << "\n\nError : An error occurred while removing the signature of library " << getInstallPath() << std::endl;
-        exit(1);
-    }
-    
-    command = std::string("codesign --sign - \"") + getInstallPath() + "\"";
-    if( systemp( command ) != 0)
-    {
-        std::cerr << "\n\nError : An error occurred while applying ad hoc signature to library " << getInstallPath() << std::endl;
-        exit(1);
-    }
+
+    adhocCodeSign(getInstallPath());
 }
 
 void Dependency::fixFileThatDependsOnMe(const std::string& file_to_fix)

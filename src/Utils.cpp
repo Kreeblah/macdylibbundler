@@ -175,21 +175,8 @@ void changeInstallName(const std::string& binary_file, const std::string& old_na
         std::cerr << "\n\nError: An error occured while trying to fix dependencies of " << binary_file << std::endl;
         exit(1);
     }
-    
-    // Remove existing signature and add ad hoc signature for ARM (Apple Silicon) binaries
-    command = std::string("codesign --remove-signature \"") + binary_file + "\"";
-    if( systemp( command ) != 0 )
-    {
-        std::cerr << "\n\nError : An error occurred while removing the signature of " << binary_file << std::endl;
-        exit(1);
-    }
-    
-    command = std::string("codesign --sign - \"") + binary_file + "\"";
-    if( systemp( command ) != 0)
-    {
-        std::cerr << "\n\nError : An error occurred while applying ad hoc signature to " << binary_file << std::endl;
-        exit(1);
-    }
+
+    adhocCodeSign(binary_file);
 }
 
 std::string getUserInputDirForFile(const std::string& filename)
@@ -230,5 +217,23 @@ std::string getUserInputDirForFile(const std::string& filename)
             Settings::addSearchPath(prefix);
             return prefix;
         }
+    }
+}
+
+void adhocCodeSign(const std::string& filename)
+{
+    // Remove existing signature
+    std::string command = std::string("codesign --remove-signature \"") + filename + "\"";
+    if( systemp( command ) != 0 )
+    {
+        std::cerr << "\n\nError : An error occurred while removing the signature of " << filename << std::endl;
+        exit(1);
+    }
+    // Add ad-hoc signature for ARM (Apple Silicon) binaries
+    command = std::string("codesign --sign - \"") + filename + "\"";
+    if( systemp( command ) != 0 )
+    {
+        std::cerr << "\n\nError : An error occurred while applying ad-hoc signature to " << filename << std::endl;
+        exit(1);
     }
 }
