@@ -205,8 +205,6 @@ void Dependency::copyYourself()
         std::cerr << "\n\nError : An error occured while trying to change identity of library " << getInstallPath() << std::endl;
         exit(1);
     }
-
-    adhocCodeSign(getInstallPath());
 }
 
 void Dependency::fixFileThatDependsOnMe(const std::string& file_to_fix)

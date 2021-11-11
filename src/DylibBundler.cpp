@@ -48,9 +48,11 @@ void changeLibPathsOnFile(std::string file_to_fix)
 {
     if (deps_collected.find(file_to_fix) == deps_collected.end())
     {
+        std::cout << "    ";
         collectDependencies(file_to_fix);
+        std::cout << "\n";
     }
-    std::cout << "\n* Fixing dependencies on " << file_to_fix.c_str() << std::endl;
+    std::cout << "  * Fixing dependencies on " << file_to_fix.c_str() << std::endl;
     
     std::vector<Dependency> deps_in_file = deps_per_file[file_to_fix];
     const int dep_amount = deps_in_file.size();
@@ -208,8 +210,6 @@ void fixRpathsOnFile(const std::string& original_file, const std::string& file_t
         {
             std::cerr << "\n\nError : An error occured while trying to fix dependencies of " << file_to_fix << std::endl;
         }
-        
-        adhocCodeSign(file_to_fix);
     }
 }
 
@@ -390,19 +390,23 @@ void doneWithDeps_go()
     {
         createDestDir();
         
-        for(int n=0; n<dep_amount; n++)
+        for(int n=dep_amount-1; n>=0; n--)
         {
+            std::cout << "\n* Processing dependency " << deps[n].getInstallPath() << std::endl;
             deps[n].copyYourself();
             changeLibPathsOnFile(deps[n].getInstallPath());
             fixRpathsOnFile(deps[n].getOriginalPath(), deps[n].getInstallPath());
+            adhocCodeSign(deps[n].getInstallPath());
         }
     }
     
     const int fileToFixAmount = Settings::fileToFixAmount();
-    for(int n=0; n<fileToFixAmount; n++)
+    for(int n=fileToFixAmount-1; n>=0; n--)
     {
+        std::cout << "\n* Processing " << Settings::fileToFix(n) << std::endl;
         copyFile(Settings::fileToFix(n), Settings::fileToFix(n)); // to set write permission
         changeLibPathsOnFile(Settings::fileToFix(n));
         fixRpathsOnFile(Settings::fileToFix(n), Settings::fileToFix(n));
+        adhocCodeSign(Settings::fileToFix(n));
     }
 }
