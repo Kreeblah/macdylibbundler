@@ -229,7 +229,7 @@ void adhocCodeSign(const std::string& file)
         // erasing the previous file. Then sign again.
         std::cerr << "  * Error : An error occurred while applying ad-hoc signature to " << file << ". Attempting workaround" << std::endl;
         std::string filename = file.substr(file.rfind("/")+1);
-        std::string tmpDir = std::string("/tmp/dylibbundler");
+        std::string tmpDir = std::string(std::getenv("TMPDIR") + std::string("dylibbundler"));
         std::string tmpFile = tmpDir+"/"+filename;
         const auto runCommand = [](const std::string& command, const std::string& errMsg)
         {
