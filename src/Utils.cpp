@@ -244,7 +244,7 @@ void adhocCodeSign(const std::string& file)
         }
         std::string tmpDir = std::string(tmpDirCstr);
         std::string tmpFile = tmpDir+"/"+filename;
-        const auto runCommand = [](const std::string& command, const std::string& errMsg, const bool& isArm)
+        const auto runCommand = [isArm](const std::string& command, const std::string& errMsg)
         {
             if( systemp( command ) != 0 )
             {
@@ -256,11 +256,11 @@ void adhocCodeSign(const std::string& file)
             }
         };
         std::string command = std::string("cp -p \"") + file + "\" \"" + tmpFile + "\"";
-        runCommand(command, "  * Error : An error occurred copying " + file + " to " + tmpDir, isArm);
+        runCommand(command, "  * Error : An error occurred copying " + file + " to " + tmpDir);
         command = std::string("mv -f \"") + tmpFile + "\" \"" + file + "\"";
-        runCommand(command, "  * Error : An error occurred moving " + tmpFile + " to " + file, isArm);
+        runCommand(command, "  * Error : An error occurred moving " + tmpFile + " to " + file);
         command = std::string("rm -rf \"") + tmpDir + "\"";
         systemp( command );
-        runCommand(signCommand, "  * Error : An error occurred while applying ad-hoc signature to " + file, isArm);
+        runCommand(signCommand, "  * Error : An error occurred while applying ad-hoc signature to " + file);
     }
 }
