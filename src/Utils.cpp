@@ -228,8 +228,21 @@ void adhocCodeSign(const std::string& file)
         // A known workaround is to copy the file to another inode, then move it back
         // erasing the previous file. Then sign again.
         std::cerr << "  * Error : An error occurred while applying ad-hoc signature to " << file << ". Attempting workaround" << std::endl;
+
+        std::string machine = system_get_output("machine");
+        bool isArm = machine.find("arm") != std::string::npos;
+        std::string tempDirTemplate = std::string(std::getenv("TMPDIR") + std::string("dylibbundler.XXXXXXXX"));
         std::string filename = file.substr(file.rfind("/")+1);
-        std::string tmpDir = std::string(std::getenv("TMPDIR") + std::string("dylibbundler"));
+        char* tmpDirCstr = mkdtemp((char *)(tempDirTemplate.c_str()));
+        if( tmpDirCstr == NULL )
+        {
+            std::cerr << "  * Error : Unable to create temp directory for signing workaround" << std::endl;
+            if( isArm )
+            {
+                exit(1);
+            }
+        }
+        std::string tmpDir = std::string(tmpDirCstr);
         std::string tmpFile = tmpDir+"/"+filename;
         const auto runCommand = [](const std::string& command, const std::string& errMsg)
         {
@@ -243,9 +256,7 @@ void adhocCodeSign(const std::string& file)
                 }
             }
         };
-        std::string command = std::string("mkdir -p \"") + tmpDir + "\"";
-        runCommand(command, "  * Error : An error occurred creating " + tmpDir);
-        command = std::string("cp -p \"") + file + "\" \"" + tmpFile + "\"";
+        std::string command = std::string("cp -p \"") + file + "\" \"" + tmpFile + "\"";
         runCommand(command, "  * Error : An error occurred copying " + file + " to " + tmpDir);
         command = std::string("mv -f \"") + tmpFile + "\" \"" + file + "\"";
         runCommand(command, "  * Error : An error occurred moving " + tmpFile + " to " + file);
